@@ -12,6 +12,11 @@
   
   body {
     font-family: 'Roboto', sans-serif;
+    background-color: #f0f8ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /*full height of the viewpoint - it will take up the entire vertical height of the user's screen*/
   }
   
   .container {
@@ -31,6 +36,7 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   }
   
+  /*Search bar*/
   .input-container {
     display: flex;
     align-items: center; 
@@ -71,7 +77,7 @@
   .weather-content {
     margin: 20px 0;
   }
-  
+  /* Navigation button*/
   #next-side-button {
     margin: 40px 0;
     border: none;
@@ -87,4 +93,7 @@
     cursor: pointer;
   }
   
+  #next-side-button:hover {
+    background-color: #1976d2;
+  }
   
