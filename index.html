@@ -11,36 +11,43 @@
     rel="stylesheet"
     href="style.css"
   >
+  <link 
+    rel="stylesheet" 
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <title>Weather App</title>
 </head>
 
 <body>
 
   <div class="container">
+    <img src="./assets/Cloudy.jpg" alt="Cloudy weather">
+    <div class="input-container">
     <input
       type="text"
       id="input-field"
       placeholder="Search city"
     >
     <button id="search-button">
-      <img src="assets/searchglass.png">
+      <i class="fa-solid fa-magnifying-glass"></i>
     </button>
+  </div>
     <div class="weather-content">
       <p id="temperature"></p>
       <p id="city"></p>
       <p id="time"></p>
-      <p id="weather"></p>
+      <p id="weather"><p>
       <p id="sunrise"></p>
       <p id="sunset"></p>
     </div>
-    <button id="next-side-button"></button>
+    <button id="next-side-button"><i class="fa-solid fa-angle-right"></i></button>
     <div
       class="weather-forecast"
       id="weather-forecast"
     >
+
       <table>
         <tr>
-          <td id="day1"></td>
+          <td id="day1">Day</td>
           <td id="iconday1">Icon</td>
           <td id="tempday1">Temp</td>
           <td id="windday1">Wind</td>
