@@ -1,10 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
+
   const API_KEY = '0250724e2245517a875bc5855eb34244';
   const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
+  //const URL = 'api.openweathermap.org/data/2.5/forecast';
+
 
   //Global 
-  const weeklyForecast = [];
-  const cities = ['Stockholm', 'Gothenburg', 'Oslo']
+  let weeklyForecast = []
+  let cities = ['Stockholm', 'Gothenburg', 'Oslo']
 
   //Function to fetch weather
   async function fetchWeather(city) {
@@ -102,10 +105,78 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-  //Function for forecast 4 day?
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /*Function to loop through city+weather
+  cities.forEach(city => {
+    fetchForecast(city).then(data => {
+      //Variables for the data properties
+      let weekday = new Date(data.list[0].dt * 1000).toLocaleDateString('en-US', { weekday: 'long' });
+      let weather = data.weather[0].description;
+      console.log(weather)
+      let temperature = data.main.temp;
+      console.log(temperature)
+      let wind = data.wind.speed;
+      console.log(wind)
+  
+  
+      /*const dayForecast = {
+        city: city,
+        weather: weather,
+        temp: temperature,
+        wind: wind,
+        sunrise: sunriseTime,
+        sunset: sunsetTime
+      };
+  
+      weeklyForecast.push(dayForecast);
+      console.log(weeklyForecast)
+  
+      //Storing data (jasmin added)
+      if (weeklyForecast.length === cities.length) {
+        localStorage.setItem("weatherData", JSON.stringify(weeklyForecast));
+      }
+  
+      //Calling the function (jasmin added)
+      displayWeather(weeklyForecast[0])
+  
+      //Start displaying the data (jasmin added)
+      function displayForecast(forecast) {
+        // Get the weather content container
+        const weatherForecast = document.querySelector('.weather-forecast');
+  
+        // Use template literals to build the HTML
+        weatherForecast.innerHTML = `
+      <p id="weekday"> ${forecast.weekday}</p >
+          <p id="temperature">${Math.round(forecast.temp)}°C</p>
+          <p id="city">${forecast.city}</p>
+          <p id="time">${new Date().toLocaleTimeString()}</p>
+          <p id="weather">${forecast.weather}</p>
+  `;
+      }
+  
+  
+    });
+  
+  
+  
+    fetchForecast()*/
 
 
 
