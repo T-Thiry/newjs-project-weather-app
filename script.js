@@ -13,10 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return data;
   }
 
-  //Function to loop through city+weather (jasmin added.then)
+  //Function to loop through city+weather (jasmin added .then)
   cities.forEach(city => {
     fetchWeather(city).then(data => {
-
       //Variables for the data properties
       let weather = data.weather[0].description;
       console.log(weather)
@@ -40,15 +39,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
       weeklyForecast.push(dayForecast);
       console.log(weeklyForecast)
-    });
 
-    //Storing data (jasmin added)
-    localStorage.setItem("weatherData", JSON.stringify(weeklyForecast));
+      //Storing data (jasmin added)
+      if (weeklyForecast.length === cities.length) {
+        localStorage.setItem("weatherData", JSON.stringify(weeklyForecast));
+      }
+    });
   });
 
 
-  // Function to display data 
+  //Function for forecast 4 day?
 
+  //Start with displaying the data
+
+  //Function + eventlisteners to search field/button
 
 
 });
