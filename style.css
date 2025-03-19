@@ -1,3 +1,90 @@
 /*Make your app responsive (it should look good on devices from 320px width up to at least 1600px)
 
   Follow one of the designs as closely as you can*/
+
+  * {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  
+  @import "~@fortawesome/fontawesome-free/css/all.css";
+  
+  body {
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .container {
+    background: linear-gradient(135deg, #a2c2e8, #f0e6f6);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    max-width: 350px;
+    width: 100%;
+    height: 600px;
+    margin: 100px auto;
+    padding: 20px;
+    border: none;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .input-container {
+    display: flex;
+    align-items: center; 
+    border: 1px solid #ffffff;
+    width: fit-content;
+    border-radius: 8px;
+  }
+  
+  input {
+    background-color: inherit;
+    color: grey;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    text-decoration: none;
+    text-align: left;
+    border: none;
+    outline: none;
+  }
+  
+  #search-button {
+    border: 1px solid transparent;
+    width: 40px; 
+    height: 38px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    cursor: pointer;
+    color: #ffffff;
+  }
+  
+  #search-button img {
+    width: 24px;
+    height: 24px;
+    border-left: 1px solid #ffffff;
+  }
+  
+  .weather-content {
+    margin: 20px 0;
+  }
+  
+  #next-side-button {
+    margin: 40px 0;
+    border: none;
+    width: 70px; 
+    height: 70px; 
+    background-color: rgb(45, 45, 111); 
+    color: white;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  
