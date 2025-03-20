@@ -32,7 +32,6 @@ async function fetchAndStoreWeather(city) {
   const todayData = data.list.find(entry => entry.dt_txt.includes("12:00:00")) || data.list[0];
 
   const todayDate = todayData.dt_txt.split(" ")[0]; // Extract 'YYYY-MM-DD'
-  //sv-SE
   const sunriseTime = new Date(data.city.sunrise * 1000).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
   const sunsetTime = new Date(data.city.sunset * 1000).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
 
@@ -113,8 +112,6 @@ document.getElementById("search-button").addEventListener("click", function () {
 fetchAndStoreWeather("Stockholm");
 
 
-//Function for our searchfield 
-//Search filed/button in html
-//Calling the field and button
+
 const searchButton = document.getElementById('search-button');
 const inputField = document.getElementById('input-field');
