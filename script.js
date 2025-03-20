@@ -32,9 +32,9 @@ async function fetchAndStoreWeather(city) {
   const todayData = data.list.find(entry => entry.dt_txt.includes("12:00:00")) || data.list[0];
 
   const todayDate = todayData.dt_txt.split(" ")[0]; // Extract 'YYYY-MM-DD'
-
-  const sunriseTime = new Date(data.city.sunrise * 1000).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
-  const sunsetTime = new Date(data.city.sunset * 1000).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+  //sv-SE
+  const sunriseTime = new Date(data.city.sunrise * 1000).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
+  const sunsetTime = new Date(data.city.sunset * 1000).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
 
   const todayForecast = {
     city: data.city.name,
@@ -77,7 +77,7 @@ function displayTodaysWeather(forecast) {
   weatherContent.innerHTML = `
         <p id="temperature">${Math.round(forecast.temp)}°C</p>
         <p id="city">${forecast.city}</p>
-        <img src="https://openweathermap.org/img/wn/${forecast.icon}@2x.png" alt="Weather icon">
+       
         <p id="weather">${forecast.weather}</p>
         <p id="sunrise">Sunrise: ${forecast.sunrise}</p>
         <p id="sunset">Sunset: ${forecast.sunset}</p>
@@ -89,12 +89,14 @@ function displayWeeklyWeather(forecastList) {
   const table = document.querySelector("#weather-forecast table");
   const rows = table.getElementsByTagName("tr");
 
+  const weatherIcon = document.getElementById("iconday1");
+
   forecastList.forEach((forecast, index) => {
     if (rows[index]) {
       rows[index].querySelector(`#day${index + 1}`).textContent = forecast.day;
-      rows[index].querySelector(`#iconday${index + 1}`).innerHTML = `<img src="https://openweathermap.org/img/wn/${forecast.icon}.png" alt="Weather icon">`;
-      rows[index].querySelector(`#tempday${index + 1}`).textContent = `Temperature: ${Math.round(forecast.temp)}°C`;
-      rows[index].querySelector(`#windday${index + 1}`).textContent = `Wind: ${forecast.wind} m/s`;
+      // rows[index].querySelector(`#iconday${index + 1}`).innerHTML = `<>`;
+      rows[index].querySelector(`#tempday${index + 1}`).textContent = `${Math.round(forecast.temp)}°C`;
+      rows[index].querySelector(`#windday${index + 1}`).textContent = `${forecast.wind} m/s`;
     }
   });
 }
@@ -128,8 +130,8 @@ async function searchWeather() {
         city: data.name,
         weather: data.weather[0].description,
         temp: data.main.temp,
-        sunrise: new Date(data.sys.sunrise * 1000).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
-        sunset: new Date(data.sys.sunset * 1000).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+        sunrise: new Date(data.sys.sunrise * 1000).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" }),
+        sunset: new Date(data.sys.sunset * 1000).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })
       });
 
 
