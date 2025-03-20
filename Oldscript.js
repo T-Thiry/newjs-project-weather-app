@@ -1,8 +1,7 @@
-// @ts-nocheck
 const API_KEY = '3bad52890d7306cc268371520cbaace6';
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/forecast';
 
-const cities: string[] = ['Stockholm', 'Gothenburg', 'Oslo'];
+const cities = ['Stockholm', 'Gothenburg', 'Oslo'];
 let weeklyForecast = {};
 
 // Function to fetch weather data
@@ -18,11 +17,12 @@ async function fetchWeather(city) {
 }
 
 // Function to get the day name from a date
-function getDayName(dateString: string): string {
+function getDayName(dateString) {
   const date = new Date(dateString);
-  const days: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   return days[date.getDay()];
 }
+
 // Function to process and store weather data
 async function fetchAndStoreWeather(city) {
   const data = await fetchWeather(city);
@@ -118,3 +118,34 @@ fetchAndStoreWeather("Stockholm");
 //Calling the field and button
 const searchButton = document.getElementById('search-button');
 const inputField = document.getElementById('input-field');
+
+
+async function searchWeather() {
+  const city = inputField.value.trim(); // trim is a string method
+  if (city) {
+    try {
+      const data = await fetchWeather(city);
+      // Use the displayWeather function to show the searched city's weather
+      displayWeather({
+        city: data.name,
+        weather: data.weather[0].description,
+        temp: data.main.temp,
+        sunrise: new Date(data.sys.sunrise * 1000).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" }),
+        sunset: new Date(data.sys.sunset * 1000).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })
+      });
+
+
+
+    } catch (error) {
+      console.error('Error fetching weather:', error);
+    }
+  }
+}
+searchButton.addEventListener('click', searchWeather);
+inputField.addEventListener('keypress', (event) => {
+  if (event.key === 'Enter') {
+    searchWeather();
+  }
+});
+
+
