@@ -148,4 +148,25 @@ inputField.addEventListener('keypress', (event) => {
   }
 });
 
+// Slide button for looping through cities
+let currentCityIndex = 0;
+
+const cycleCity = () => {
+  currentCityIndex = (currentCityIndex + 1) % cities.length; // % means we loop back
+
+  // Get the current city
+  const city = cities[currentCityIndex];
+
+  fetchAndStoreWeather(city);
+}
+
+const nextSideButton = document.getElementById('next-side-button');
+console.log('Next side button:', nextSideButton);
+if (nextSideButton) {
+  nextSideButton.addEventListener('click', cycleCity);
+} else {
+  console.error("Could not find button with ID 'next-side-button'");
+}
+
+
 
