@@ -110,6 +110,18 @@ document.addEventListener('DOMContentLoaded', function () {
             fetchAndStoreWeather(cityInput);
         }
     });
+
+    // Event listener for Enter key
+    document.getElementById("input-field").addEventListener("keydown", function (event) {
+        // Check if the pressed key is Enter (key code 13)
+        if (event.key === "Enter") {
+            const cityInput = this.value.trim();
+            if (cityInput) {
+                fetchAndStoreWeather(cityInput);
+            }
+        }
+    });
+
     // Load default city (Stockholm) on page load
     fetchAndStoreWeather("Stockholm");
     const searchButton = document.getElementById('search-button');
