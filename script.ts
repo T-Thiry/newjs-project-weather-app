@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Slide button for looping through cities
   let currentCityIndex = 0;
 
-  const cycleCity = () => {
+  function cycleCity() {
     currentCityIndex = (currentCityIndex + 1) % cities.length; // % means we loop back
 
     // Get the current city
