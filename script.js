@@ -1,172 +1,234 @@
-const API_KEY = '3bad52890d7306cc268371520cbaace6';
-const BASE_URL = 'https://api.openweathermap.org/data/2.5/forecast';
+document.addEventListener('DOMContentLoaded', function () {
+  // API information
+  const API_KEY = '3bad52890d7306cc268371520cbaace6';
+  const BASE_URL = 'https://api.openweathermap.org/data/2.5/forecast';
 
-const cities = ['Stockholm', 'Gothenburg', 'Oslo'];
-let weeklyForecast = {};
+  // List of default cities
+  const cities = ['Stockholm', 'Gothenburg', 'Oslo'];
+  let weeklyForecast = {};
+  let currentCityIndex = 0;
 
-// Function to fetch weather data
-async function fetchWeather(city) {
-  try {
-    const response = await fetch(`${BASE_URL}?q=${city}&units=metric&appid=${API_KEY}`);
-    const data = await response.json();
-    if (data.cod !== "200") throw new Error(data.message);
-    return data;
-  } catch (error) {
-    console.error(`Error fetching weather data for ${city}:`, error);
+  // Function to fetch weather data from the API
+  async function fetchWeather(city) {
+    try {
+      const response = await fetch(`${BASE_URL}?q=${city}&units=metric&appid=${API_KEY}`);
+      const data = await response.json();
+
+      if (data.cod !== "200") {
+        throw new Error(data.message);
+      }
+
+      return data;
+    } catch (error) {
+      console.error(`Error fetching weather data for ${city}:`, error);
+      return null;
+    }
   }
-}
 
-// Function to get the day name from a date
-function getDayName(dateString) {
-  const date = new Date(dateString);
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  return days[date.getDay()];
-}
+  // Function to get the day name from a date
+  function getDayName(dateString) {
+    const date = new Date(dateString);
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return days[date.getDay()];
+  }
 
-// Function to process and store weather data
-async function fetchAndStoreWeather(city) {
-  const data = await fetchWeather(city);
-  if (!data || !data.list) return;
+  async function fetchAndStoreWeather(city) {
+    const data = await fetchWeather(city);
+    if (!data || !data.list) {
+      return;
+    }
 
-  // Extract today's forecast (12:00 PM or fallback to first available)
-  const todayData = data.list.find(entry => entry.dt_txt.includes("12:00:00")) || data.list[0];
 
-  const todayDate = todayData.dt_txt.split(" ")[0]; // Extract 'YYYY-MM-DD'
-  //sv-SE
-  const sunriseTime = new Date(data.city.sunrise * 1000).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
-  const sunsetTime = new Date(data.city.sunset * 1000).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
+    // Extract today's forecast 
+    const todayData = data.list.find(entry => entry.dt_txt.includes("12:00:00")) || data.list[0];
+    const todayDate = todayData.dt_txt.split(" ")[0]; // Extract 'YYYY-MM-DD'
+    const sunriseTime = new Date(data.city.sunrise * 1000).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
+    const sunsetTime = new Date(data.city.sunset * 1000).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
 
-  const todayForecast = {
-    city: data.city.name,
-    day: getDayName(todayDate),
-    weather: todayData.weather[0].description,
-    icon: todayData.weather[0].icon,
-    temp: todayData.main.temp,
-    wind: todayData.wind.speed,
-    sunrise: sunriseTime,
-    sunset: sunsetTime,
-  };
+    // Create today's forecast object
+    const todayForecast = {
+      city: data.city.name,
+      day: getDayName(todayDate),
+      weather: todayData.weather[0].description,
+      icon: todayData.weather[0].icon,
+      temp: todayData.main.temp,
+      wind: todayData.wind.speed,
+      sunrise: sunriseTime,
+      sunset: sunsetTime,
+    };
 
-  // Extract 4-day forecast (choosing 12:00 PM for consistency)
-  const filteredForecast = data.list.filter(entry => entry.dt_txt.includes("12:00:00"));
-  const upcomingForecast = filteredForecast.slice(0, 4).map(entry => ({
-    date: entry.dt_txt.split(' ')[0],
-    day: getDayName(entry.dt_txt.split(' ')[0]),
-    icon: entry.weather[0].icon,
-    temp: entry.main.temp,
-    wind: entry.wind.speed,
-  }));
+    // 4-day forecast. Group forecast entries by day to get one entry per day
+    const dailyForecasts = {};
 
-  // Store forecasts
-  weeklyForecast[city] = {
-    today: todayForecast,
-    upcoming: upcomingForecast
-  };
+    data.list.forEach(entry => {
+      const date = entry.dt_txt.split(' ')[0];
+      const hour = entry.dt_txt.split(' ')[1].split(':')[0];
 
-  // Store in localStorage
-  localStorage.setItem("weatherData", JSON.stringify(weeklyForecast));
+      // Use noon (12:00) forecasts for consistency
+      if (hour === '12') {
+        // Skip today's date
+        if (date !== todayDate) {
+          dailyForecasts[date] = {
+            date: date,
+            day: getDayName(date),
+            icon: entry.weather[0].icon,
+            weather: entry.weather[0].description,
+            temp: entry.main.temp,
+            wind: entry.wind.speed,
+          };
+        }
+      }
+    });
 
-  // Update UI
-  displayTodaysWeather(todayForecast);
-  displayWeeklyWeather(upcomingForecast);
-}
+    // Convert to array and take the first 4 days
+    const upcomingForecast = Object.values(dailyForecasts).slice(0, 4);
 
-// Function to display today's weather
-function displayTodaysWeather(forecast) {
-  const weatherContent = document.querySelector('.weather-content');
-  weatherContent.innerHTML = `
-        <p id="temperature">${Math.round(forecast.temp)}°C</p>
-        <p id="city">${forecast.city}</p>
-       
-        <p id="weather">${forecast.weather}</p>
+    // Store forecasts
+    weeklyForecast[city] = {
+      today: todayForecast,
+      upcoming: upcomingForecast
+    };
+
+    // Store in localStorage for persistence
+    localStorage.setItem("weatherData", JSON.stringify(weeklyForecast));
+
+    // Update UI
+    displayTodaysWeather(todayForecast);
+    displayWeeklyWeather(upcomingForecast);
+
+    // Set background based on weather
+    updateBackground(todayForecast.weather, todayForecast.icon);
+  }
+
+  // Function to display today's weather in the UI
+  function displayTodaysWeather(forecast) {
+    const weatherContent = document.getElementById('weather-content');
+    if (!weatherContent) return;
+
+    // Create HTML with the OpenWeatherMap icon
+    weatherContent.innerHTML = `
+      <div class="weather-icon">
+        <img id="main-icon" src="https://openweathermap.org/img/wn/${forecast.icon}@2x.png" alt="${forecast.weather}">
+      </div>
+      <p id="temperature">${Math.round(forecast.temp)}°C</p>
+      <p id="city">${forecast.city}</p>
+      <p id="weather">${forecast.weather}</p>
+      <div class="sunrise-sunset">
         <p id="sunrise">Sunrise: ${forecast.sunrise}</p>
         <p id="sunset">Sunset: ${forecast.sunset}</p>
+      </div>
     `;
-}
-
-// Function to display 4-day forecast in table
-function displayWeeklyWeather(forecastList) {
-  const table = document.querySelector("#weather-forecast table");
-  const rows = table.getElementsByTagName("tr");
-
-  const weatherIcon = document.getElementById("iconday1");
-
-  forecastList.forEach((forecast, index) => {
-    if (rows[index]) {
-      rows[index].querySelector(`#day${index + 1}`).textContent = forecast.day;
-      // rows[index].querySelector(`#iconday${index + 1}`).innerHTML = `<>`;
-      rows[index].querySelector(`#tempday${index + 1}`).textContent = `${Math.round(forecast.temp)}°C`;
-      rows[index].querySelector(`#windday${index + 1}`).textContent = `${forecast.wind} m/s`;
-    }
-  });
-}
-
-// Event listener for search button
-document.getElementById("search-button").addEventListener("click", function () {
-  const cityInput = document.getElementById("input-field").value.trim();
-  if (cityInput) {
-    fetchAndStoreWeather(cityInput);
   }
-});
 
-// Load default city (Stockholm) on page load
-fetchAndStoreWeather("Stockholm");
+  // Function to display the weekly forecast in the UI
+  function displayWeeklyWeather(forecastList) {
+    const forecastTable = document.querySelector("#weather-forecast table");
+    if (!forecastTable) return;
+
+    const rows = forecastTable.getElementsByTagName("tr");
+    if (!rows || rows.length === 0) return;
+
+    forecastList.forEach((forecast, index) => {
+      if (index < rows.length) {
+        // Update day
+        const dayCell = rows[index].querySelector(`#day${index + 1}`);
+        if (dayCell) {
+          dayCell.textContent = forecast.day;
+        }
+
+        // Update icon using OpenWeatherMap icon
+        const iconCell = rows[index].querySelector(`#iconday${index + 1}`);
+        if (iconCell) {
+          iconCell.innerHTML = `<img src="https://openweathermap.org/img/wn/${forecast.icon}.png" alt="${forecast.weather}">`;
+        }
+
+        // Update temp and wind
+        const tempCell = rows[index].querySelector(`#tempday${index + 1}`);
+        if (tempCell) {
+          tempCell.textContent = `${Math.round(forecast.temp)}°C`;
+        }
+
+        const windCell = rows[index].querySelector(`#windday${index + 1}`);
+        if (windCell) {
+          windCell.textContent = `${forecast.wind} m/s`;
+        }
+      }
+    });
+  }
+
+  // Function to update the background based on weather conditions
+  function updateBackground(weatherDescription, iconCode) {
+    const container = document.querySelector('.container');
+    if (!container) return;
+
+    // Remove previous weather classes
+    container.classList.remove('rainy', 'cloudy', 'clear', 'snowy', 'daytime', 'nighttime');
+
+    // Determine if it's day or night from the icon code (ends with d for day, n for night)
+    const isDaytime = iconCode.endsWith('d');
+    container.classList.add(isDaytime ? 'daytime' : 'nighttime');
+
+    // Add appropriate weather class
+    if (weatherDescription.includes('rain') || weatherDescription.includes('drizzle')) {
+      container.classList.add('rainy');
+    } else if (weatherDescription.includes('cloud')) {
+      container.classList.add('cloudy');
+    } else if (weatherDescription.includes('clear')) {
+      container.classList.add('clear');
+    } else if (weatherDescription.includes('snow')) {
+      container.classList.add('snowy');
+    }
+  }
+
+  // Function to cycle through default cities
+  function cycleCity() {
+    currentCityIndex = (currentCityIndex + 1) % cities.length;
+    const city = cities[currentCityIndex];
+    fetchAndStoreWeather(city);
+  }
 
 
-//Function for our searchfield 
-//Search filed/button in html
-//Calling the field and button
-const searchButton = document.getElementById('search-button');
-const inputField = document.getElementById('input-field');
+  // Event listeners
+  function initializeEventListeners() {
+    const searchButton = document.getElementById("search-button");
+    const inputField = document.getElementById("input-field");
+    const nextSideButton = document.getElementById('next-side-button');
 
-
-async function searchWeather() {
-  const city = inputField.value.trim(); // trim is a string method
-  if (city) {
-    try {
-      const data = await fetchWeather(city);
-      // Use the displayWeather function to show the searched city's weather
-      displayWeather({
-        city: data.name,
-        weather: data.weather[0].description,
-        temp: data.main.temp,
-        sunrise: new Date(data.sys.sunrise * 1000).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" }),
-        sunset: new Date(data.sys.sunset * 1000).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })
+    if (searchButton) {
+      searchButton.addEventListener("click", function () {
+        if (inputField && inputField.value.trim()) {
+          fetchAndStoreWeather(inputField.value.trim());
+        }
       });
+    }
 
+    if (inputField) {
+      inputField.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" && inputField.value.trim()) {
+          fetchAndStoreWeather(inputField.value.trim());
+        }
+      });
+    }
 
-
-    } catch (error) {
-      console.error('Error fetching weather:', error);
+    if (nextSideButton) {
+      nextSideButton.addEventListener('click', cycleCity);
+    } else {
+      console.error("Could not find button with ID 'next-side-button'");
     }
   }
-}
-searchButton.addEventListener('click', searchWeather);
-inputField.addEventListener('keypress', (event) => {
-  if (event.key === 'Enter') {
-    searchWeather();
+
+
+  initializeEventListeners();
+  fetchAndStoreWeather("Stockholm");
+
+  const savedData = localStorage.getItem("weatherData");
+  if (savedData) {
+    try {
+      weeklyForecast = JSON.parse(savedData);
+    } catch (e) {
+      console.error("Failed to parse saved weather data:", e);
+    }
   }
 });
-
-// Slide button for looping through cities
-let currentCityIndex = 0;
-
-const cycleCity = () => {
-  currentCityIndex = (currentCityIndex + 1) % cities.length; // % means we loop back
-
-  // Get the current city
-  const city = cities[currentCityIndex];
-
-  fetchAndStoreWeather(city);
-}
-
-const nextSideButton = document.getElementById('next-side-button');
-console.log('Next side button:', nextSideButton);
-if (nextSideButton) {
-  nextSideButton.addEventListener('click', cycleCity);
-} else {
-  console.error("Could not find button with ID 'next-side-button'");
-}
-
 
 
