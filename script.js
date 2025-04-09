@@ -108,14 +108,18 @@ document.addEventListener('DOMContentLoaded', function () {
     // Create HTML with the OpenWeatherMap icon
     weatherContent.innerHTML = `
       <div class="weather-icon">
-        <img id="main-icon" src="https://openweathermap.org/img/wn/${forecast.icon}@2x.png" alt="${forecast.weather}">
-      </div>
-      <p id="temperature">${Math.round(forecast.temp)}°C</p>
-      <p id="city">${forecast.city}</p>
-      <p id="weather">${forecast.weather}</p>
-      <div class="sunrise-sunset">
-        <p id="sunrise">Sunrise: ${forecast.sunrise}</p>
-        <p id="sunset">Sunset: ${forecast.sunset}</p>
+        <div class="icon-temp">
+         <p id="temperature">${Math.round(forecast.temp)}°C</p>
+          <img id="main-icon" src="https://openweathermap.org/img/wn/${forecast.icon}@2x.png" alt="${forecast.weather}">
+        </div>
+        <div>
+          <p id="city">${forecast.city}</p>
+          <p id="weather">${forecast.weather}</p>
+        </div>
+        <div class="sunrise-sunset">
+          <p id="sunrise">Sunrise ${forecast.sunrise}</p>
+          <p id="sunset">Sunset ${forecast.sunset}</p>
+        </div>
       </div>
     `;
   }
