@@ -1,3 +1,3 @@
 # js-project-weather-app
 
-nordicweatherapp.netlify.app
+nordic-weatherapp.netlify.app
